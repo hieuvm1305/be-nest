@@ -10,7 +10,7 @@ services:
     volumes:
       - mongodb_data:/data/db
     ports:
-      -"${DB_PORT}:${DB_PORT}"
+      - "${DB_PORT}:${DB_PORT}"
       
   # mongo-express:
   #   image: mongo-express:latest
@@ -22,5 +22,7 @@ services:
   #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
   #     ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
   #     ME_CONFIG_BASICAUTH: false
+
+#link to mongo compass: mongodb://root:example@localhost:27017/
 volumes:
   mongodb_data:
