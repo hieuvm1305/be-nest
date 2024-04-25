@@ -1,12 +1,10 @@
 import { Exclude, Expose } from 'class-transformer';
 
 export class UserInfoDto {
-  @Expose()
-  username: string;
-
   @Exclude()
   password: string;
-
+  @Expose()
+  uid: string;
   @Expose()
   email: string;
   @Expose()

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
@@ -6,14 +6,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserInfoDto } from './dto/user_info.dto';
 import { plainToClass } from 'class-transformer';
-
+import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(createUserDto: CreateUserDto) {
-    const data = { createdAt: new Date(), ...createUserDto };
+    const hashPw = bcrypt.hash(createUserDto.password, 10);
+    const data = { ...createUserDto, createdAt: new Date(), password: hashPw };
+
     const newUser = await this.userModel.create(data);
     return newUser;
   }
@@ -36,15 +38,27 @@ export class UserService {
     // return foundUser;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const updatedUser = await this.userModel.findByIdAndUpdate(
-      id,
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    let updatedUser = await this.userModel.findOneAndUpdate(
+      { uid: id },
       updateUserDto,
     );
-    return updatedUser;
+    if (!updatedUser) throw new NotFoundException('not found user');
+
+    updatedUser = await this.userModel.findOne({ uid: id });
+
+    return plainToClass(UserInfoDto, updatedUser, {
+      excludeExtraneousValues: true,
+    });
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async remove(id: string) {
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { uid: id },
+      { is_inActive: true },
+    );
+    if (!updatedUser) throw new NotFoundException('not found user');
+
+    return { message: 'dellete successfully' };
+  }
 }

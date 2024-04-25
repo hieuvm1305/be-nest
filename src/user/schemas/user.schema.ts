@@ -6,9 +6,9 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-  @Prop({ required: true })
-  @IsNotEmpty()
-  username: string;
+  @Prop({ unique: true, required: true })
+  @IsEmail()
+  email: string;
 
   @Prop({ required: true })
   @IsNotEmpty()
@@ -23,10 +23,6 @@ export class User {
 
   @Prop({ required: true })
   age: number;
-
-  @Prop({ unique: true })
-  @IsEmail()
-  email: string;
 
   @Prop()
   address: string;
@@ -45,6 +41,9 @@ export class User {
 
   @Prop({ default: false })
   is_superuser: boolean;
+
+  @Prop({ default: false })
+  is_inActive: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
