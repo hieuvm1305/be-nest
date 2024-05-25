@@ -12,5 +12,6 @@ import { Logger } from '@nestjs/common';
   ],
   controllers: [UserController],
   providers: [UserService, Logger],
+  exports: [UserService],
 })
 export class UserModule {}

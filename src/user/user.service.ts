@@ -61,4 +61,10 @@ export class UserService {
 
     return { message: 'dellete successfully' };
   }
+
+  async findByEmail(email: string) {
+    const user = this.userModel.findOne({ email: email }).exec();
+    if (!user) return null;
+    return user;
+  }
 }
